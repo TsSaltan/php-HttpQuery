@@ -24,6 +24,11 @@
             "HttpQuery\\": "src"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "HttpQuery\\Tests\\": "tests"
+        }
+    },
     "extra": {
         "branch-alias": {
             "dev-master": "1.0"
