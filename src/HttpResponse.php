@@ -5,20 +5,20 @@ class HttpResponse {
 	/**
 	 * Curl resourse
 	 */
-	protected $ch;
+	protected object $ch;
 
 	/**
 	 * @var string|null|bool
 	 */
-	protected $result;
+	protected string|null|bool $result;
 
 	/**
 	 * Query info
 	 * @var array
 	 */
-	protected $info;
+	protected array $info;
 
-	public function __construct($ch){
+	public function __construct(object $ch){
 		$this->ch = $ch;
 		$this->result = curl_exec($this->ch);
 		$this->info = curl_getinfo($this->ch);
@@ -57,7 +57,7 @@ class HttpResponse {
 		return 'GET';
 	}
 
-	public function getResponseBody(){
+	public function getResponseBody(): mixed {
 		return $this->result;
 	}
 
@@ -69,11 +69,39 @@ class HttpResponse {
 		return $this->info['download_content_length'] ?? 0;
 	}
 
-	public function getResponseContentType(){
+	public function getResponseContentType(): ?string {
 		return $this->info['content_type'];
 	}
 
 	public function __toString(): string {
-		return $this->getResponseBody();
+		return (string) $this->getResponseBody();
+	}
+
+	public function getResponseJson(?bool $as_array = true): mixed {
+		$contentType = $this->getResponseContentType();
+		if(
+			$contentType === 'application/json' ||
+			$contentType === 'text/json'
+		){
+			$response = (string) $this->getResponseBody();
+			$json = json_decode($response, $as_array);
+
+			if(json_last_error() === JSON_ERROR_NONE){
+				return $json;
+			} else {
+				throw new \Exception('Invalid response: ' . $response . '; JSON parse error: ' . json_last_error_msg());
+			}
+		} else {
+			throw new \Exception('Response content-type is not valid JSON: ' . $contentType);
+		}
+	}
+
+	public function __get(string $name): mixed {	
+		$getter = 'getResponse' . ucfirst($name);
+		if(method_exists($this, $getter)){
+			return $this->$getter();
+		}
+
+		return null;
 	}
 }
