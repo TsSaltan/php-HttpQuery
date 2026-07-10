@@ -104,4 +104,8 @@ class HttpResponse {
 
 		return null;
 	}
+
+	public function save(string $file){
+		return file_put_contents($file, $this->getResponseBody());
+	}
 }
