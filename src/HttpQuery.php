@@ -6,7 +6,7 @@ class HttpQuery {
 	/**
 	 * Curl resourse
 	 */
-	protected $ch;
+	protected object $ch;
 
 	/**
 	 * Curl params
@@ -55,7 +55,6 @@ class HttpQuery {
 
 	/**
 	 * Генерация случайного браузерного UserAgent
-	 * @return [type] [description]
 	 */
 	public function generateUserAgent(){
 		$os = ['Windows NT 10.0; Win64; x64', 'Windows NT 10.0; WOW64', 'Windows NT 6.3; WOW64; rv:52.0', 'Macintosh; Intel Mac OS X 10_13_4', 'Macintosh; Intel Mac OS X 10_13_6'];
@@ -130,7 +129,6 @@ class HttpQuery {
 
 	/**
 	 * Установить файл для хранения кук
-	 * @param string $saveName
 	 */
 	public function setCookieFile(string $cookieFile){
 		$this->setParams([
@@ -245,7 +243,7 @@ class HttpQuery {
 	 * Выполнить POST запрос
 	 * @return HttpResponse
 	 */
-	public function post($data, int $attempts = 1){
+	public function post(array|string $data, int $attempts = 1){
 		$this->setRequestMethod('POST');
 		$data = is_array($data) ? http_build_query($data) : $data;
 		$this->setParams([CURLOPT_POSTFIELDS => $data]);
